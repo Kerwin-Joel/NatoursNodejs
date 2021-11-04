@@ -1,7 +1,9 @@
 const dotenv = require('dotenv');
 const app = require('./app');
 const mongoose = require('mongoose')
-const port = 3080; //definimos el puerto en una variable
+const port = 3000; //definimos el puerto en una variable
+
+
 
 process.on('uncaughtException',err=>{
     console.log('UNCAUGHT EXCEPTION shutting down...');
@@ -9,11 +11,10 @@ process.on('uncaughtException',err=>{
     process.exit(0);
 })
 
-//to access the variables globals
-dotenv.config({path:'./config.env'})
 
 //generate conenction to DB
 const DB = process.env.DATABASE.replace('<PASSWORD>',process.env.DATABASE_PASSWORD)
+
 mongoose.connect(
     DB,{
         useNewUrlParser:true,
@@ -25,6 +26,8 @@ mongoose.connect(
 
 //PUERTO EN EL QUE EL SERVIDOR ESCUCHARÁ
 const server = app.listen(port,()=>{
+    require('dotenv').config();
+    dotenv.config({path:'./config.env'})
     console.log(`app listening on port ${port}`)
 })
 

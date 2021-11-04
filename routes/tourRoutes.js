@@ -1,6 +1,8 @@
 const express = require('express');
 const tourRouter = express.Router();
 const tourController = require('../controllers/tourController')
+const authController = require('../controllers/authController')
+const reviewRoutes = require('../routes/reviewRoutes')
 
 //Existe un middleware que se ejecuta cuando la url coincide con la ruta
 tourRouter.param('id',(req,res, next,val)=>{
@@ -15,13 +17,15 @@ tourRouter.param('id',(req,res, next,val)=>{
     // cuando tengas parametros y funciones iguales
 })
 
+tourRouter.use('/:tourId/reviews',reviewRoutes)
+
 tourRouter
     .route('/tour-stats')
     .get(tourController.getTourStats)
 
 tourRouter
     .route('/monthly-plan/:year')
-    .get(tourController.getMonthlyPlan)
+    .get(authController.protected, authController.restricTo('admin','lead-guide','guide'),tourController.getMonthlyPlan)
 
 tourRouter
     .route('/top-5-cheap')
@@ -30,12 +34,22 @@ tourRouter
 tourRouter
     .route('/')
     .get(tourController.getAllTours)
-    .post(tourController.postTour)
+    .post(authController.protected, authController.restricTo('admin', 'lead-guide'),tourController.postTour)
 
 tourRouter
     .route('/:id')
     .get(tourController.getTourById)
-    .patch(tourController.patchTour)
-    .delete(tourController.deleteTour)
+    .patch(authController.protected, authController.restricTo('admin','lead-guide'),tourController.patchTour)
+    .delete(authController.protected, authController.restricTo('admin','lead-guide'), tourController.deleteTour)
+
+
+// tourRouter
+//     .route('/:tourId/reviews')
+//     .post(
+//         authController.protected,
+//         authController.restricTo('user'),
+//         reviewController.createReview
+//         )
+
 
 module.exports = tourRouter;

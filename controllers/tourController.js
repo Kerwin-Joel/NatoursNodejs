@@ -1,7 +1,6 @@
 const Tour = require('../model/tourModel')
-const APIFeatures = require('./../utils/apiFeatures')
 const catchAsync = require('../utils/catchAsync')
-const AppError = require('../utils/appError')
+const factory = require('./handleFactory')
 //---------CALLBACKS TO ENDPOINTS
 //FUNCTIONES TO TOURS (CONTROLLERS)
 
@@ -14,84 +13,21 @@ exports.aliasTopTour = async (req, res, next) => {
     next()
     //este metodo se ejecutara antes del metodo getAllTours
 }
-
-
 //GETALLTOURS
-exports.getAllTours = catchAsync(async (req, res, next) => {
-    /*el callback es lo que queremos qeu haga cuando
-    se solicite el metodo get con esa url
-    req => lo que el navegador envia al servidor
-    res => lo que nosotros respondemos al nevegador*/
-                             //queryMoongose, obj url params
-    const feature = new APIFeatures(Tour.find(),req.query)
-            .filter()
-            .sorting()
-            .fieldLimit()
-            .pagination()
-    
-    //hacer consulta
-    const tours = await feature.query; // Execute query
-
-    res.status(200).send({
-        status: 'success',
-        result: tours.length,
-        data: {
-            tours
-        }
-    })
-})
+exports.getAllTours = factory.getAll(Tour)
 //GETTOURBYID
-exports.getTourById = catchAsync(async(req, res, next) => {
-    //req.params nos permite convertir los parametros en objetos
-    const tour = await Tour.findById(req.params.id)
-
-    if(!tour) {
-        return next(new AppError('Not tour found with that id',404));
-    }
-
-    res.status(200).json({
-        status: 'success',
-        data: {
-            tour
-        }
-    })
-})
-
+exports.getTourById = factory.getOne(Tour,{path:'reviews'})
 //POST
-exports.postTour = catchAsync(async (req, res, next) => {
-    //req.body el body estará lleno de data cuando se le haya pasado data en el postman
-    const newTour = await Tour.create(req.body)
-    res.status(201).send({
-        status: 'success',
-        data: {
-            tour: newTour
-        }
-    })
-})
+exports.postTour    = factory.createOne(Tour)
 //PATCHTOUR
-exports.patchTour = catchAsync(async (req, res, next) => {
-    const tour = await Tour.findByIdAndUpdate(req.params.id,req.body,{
-        new:true,
-        runValidators: true
-    })
-
-    if(!tour) {
-        return next(new AppError('Not tour found with that id',404));
-    }
-
-    res.status(200).send({ 
-        status: 'success', 
-        data:{
-            tour
-        }
-    })
-})
+exports.patchTour   = factory.updateOne(Tour)
 //DELETETOUR
-exports.deleteTour = catchAsync(async(req, res, next) => {
-    // req.body el body estará lleno de data cuando se le haya pasado data en el postman
-    // console.log(req.body);
+exports.deleteTour  = factory.deleteOne(Tour)
+/* exports.deleteTour = catchAsync(async(req, res, next) => {
+    req.body el body estará lleno de data cuando se le haya pasado data en el postman
+    console.log(req.body);
     
-    //El status 204 no devuelve nada de data
+    El status 204 no devuelve nada de data
     const tour = await Tour.findByIdAndDelete(req.params.id)
 
     if(!tour) {
@@ -104,7 +40,7 @@ exports.deleteTour = catchAsync(async(req, res, next) => {
             tour
         }
     });
-})
+}) */
 //pipeline matching and grouping
 exports.getTourStats = catchAsync(async (req, res, next) => {
     const stats = await Tour.aggregate([
@@ -133,7 +69,6 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
         }
     })
 })
-
 exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     const year = req.params.year * 1; // 2021
 
@@ -180,3 +115,30 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
         }
     });
 })
+
+
+
+/* exports.getAllTours = catchAsync(async (req, res, next) => {
+    /*el callback es lo que queremos qeu haga cuando
+    se solicite el metodo get con esa url
+    req => lo que el navegador envia al servidor
+    res => lo que nosotros respondemos al nevegador
+                             //queryMoongose, obj url params
+    const feature = new APIFeatures(Tour.find(),req.query)
+            .filter()
+            .sorting()
+            .fieldLimit()
+            .pagination()
+            
+    
+    //hacer consulta
+    const tours = await feature.query; // Execute query
+
+    res.status(200).send({
+        status: 'success',
+        result: tours.length,
+        data: {
+            tours
+        }
+    })
+}) */

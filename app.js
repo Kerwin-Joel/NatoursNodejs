@@ -1,31 +1,70 @@
+
 //EN EL ARCHIVO APP SE COLOCA TODO LA CONFIGURACION DE EXPRESS
 
-const express = require('express'); //requerimos express
-const app = express(); //creamos una instancia de express
-const morgan = require('morgan')
+//to access the variables globals in all files js
+const dotenv        = require('dotenv');
+dotenv.config(  { path:'./config.env' }  )
 
-const AppError = require('./utils/appError')
-const userRoutes = require('./routes/userRoutes')
-const tourRoutes = require('./routes/tourRoutes');
+const express       = require('express'); //requerimos express
+const app           = express(); //creamos una instancia de express
+const morgan        = require('morgan')
+const rateLmit      = require('express-rate-limit')
+const helmet        = require('helmet')
+const mongoSanitize = require('express-mongo-sanitize');
+const xss           = require('xss-clean')
+const hpp           = require('hpp')
+
+
+const AppError      = require('./utils/appError')
+const userRoutes    = require('./routes/userRoutes')
+const tourRoutes    = require('./routes/tourRoutes');
+const reviewRoutes    = require('./routes/reviewRoutes');
 const globalErrorController = require('./controllers/errorController');
 
+//Set security HTTP header
+app.use(helmet())
+
+
+
+//Limit request from same API
+const limiter = rateLmit({
+    max         : 100,
+    windowMs    : 60 * 60 * 1000,
+    message     : 'Too many request for this IP, please try again in a hour'
+})
+
+app.use('/api', limiter)
 app.use(morgan('dev'))// middleware de terceros
+
+//Serving static files
 app.use(express.static(`${__dirname}/public`))
+
 //nos permite recibir parametros en formato JSON
-app.use(express.json()); //esto es un middleware, nos ayuda con el post
+app.use(express.json( {limit:'10kb'}) ); //esto es un middleware, nos ayuda con el post y que solo acepta 10kb de tamaño
 //app.use(functionHer) con este metodo agregamos la funcion a la app para 
 //que se comporte como un middleware
-app.use('/api/v1/users',userRoutes);
-app.use('/api/v1/tours', tourRoutes);// generamos el middleware para correr una subApp dentro de nuestra app
+
+//Data sanitization against NoSQL query injection
+app.use(mongoSanitize());// remueve los caracteres extraños 
+
+//Data sanitization against XSS
+app.use(xss())//previene la injeccion de html malicioso
+app.use(hpp({
+    whitelist:['duration','ratingsQuantity','ratingsAverage','maxGroupSize','difficulty','price']
+}))//previene la polucion de queries en el url
+
+app.use('/api/v1/users',    userRoutes);
+app.use('/api/v1/reviews',  reviewRoutes);
+app.use('/api/v1/tours',    tourRoutes);// generamos el middleware para correr una subApp dentro de nuestra app
 // similar a correr una app con rutas dentro de nuestra app padre,
 // en este caso tourRouter y userRouter "corren" dentro de app
 /////Express tiene un metodo para manejar rutas desconocidas y es .all
-app.all('*',(req, res, next)=>{
-    next(new AppError(`Can't find ${req.originalUrl} on thi server!`,404));
-})
-
-//middleware para encargarnos de los errores
+app.all('*', (req, res, next) => {
+    next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+    
 app.use(globalErrorController)
+//middleware para encargarnos de los errores
 
 // const funtionMiddleware = (req,res, next)=> {
 //     console.log('pasaste el acceso')
