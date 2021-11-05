@@ -32,6 +32,14 @@ tourRouter
     .get(tourController.aliasTopTour,tourController.getAllTours)
 
 tourRouter
+    .route('/tours-within/:distance/center/:latlng/unit/:unit')
+    .get(tourController.getTourWithin)
+tourRouter
+    .route('/distances/:latlng/unit/:unit')
+    .get(tourController.getDistances)
+
+
+tourRouter
     .route('/')
     .get(tourController.getAllTours)
     .post(authController.protected, authController.restricTo('admin', 'lead-guide'),tourController.postTour)
