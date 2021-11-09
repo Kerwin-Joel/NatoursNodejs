@@ -5,6 +5,7 @@
 const dotenv        = require('dotenv');
 dotenv.config(  { path:'./config.env' }  )
 
+const path          = require('path');
 const express       = require('express'); //requerimos express
 const app           = express(); //creamos una instancia de express
 const morgan        = require('morgan')
@@ -13,16 +14,67 @@ const helmet        = require('helmet')
 const mongoSanitize = require('express-mongo-sanitize');
 const xss           = require('xss-clean')
 const hpp           = require('hpp')
-
+const cookieParser  = require('cookie-parser')
 
 const AppError      = require('./utils/appError')
 const userRoutes    = require('./routes/userRoutes')
 const tourRoutes    = require('./routes/tourRoutes');
 const reviewRoutes    = require('./routes/reviewRoutes');
+const viewRoutes    = require('./routes/viewRoutes');
 const globalErrorController = require('./controllers/errorController');
 
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+//Serving static files
+// app.use(express.static(`${__dirname}/public`))
+app.use(express.static(path.join(__dirname,'public')))
 //Set security HTTP header
-app.use(helmet())
+app.use(helmet({ //Este objeto es para poder dar permiso a webs externas que inserten su codigo en nuestra pagina
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'", 'data:', 'blob:', 'https:', 'ws:'],
+            baseUri: ["'self'"],
+            fontSrc: ["'self'", 'https:', 'data:'],
+            scriptSrc: [
+                "'self'",
+                'https:',
+                'http:',
+                'blob:',
+                'https://*.mapbox.com',
+                'https://js.stripe.com',
+                'https://m.stripe.network',
+                'https://*.cloudflare.com',
+            ],
+            frameSrc: ["'self'", 'https://js.stripe.com'],
+            objectSrc: ["'none'"],
+            styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+            workerSrc: [
+                "'self'",
+                'data:',
+                'blob:',
+                'https://*.tiles.mapbox.com',
+                'https://api.mapbox.com',
+                'https://events.mapbox.com',
+                'https://m.stripe.network',
+            ],
+            childSrc: ["'self'", 'blob:'],
+            imgSrc: ["'self'", 'data:', 'blob:'],
+            formAction: ["'self'"],
+            connectSrc: [
+                "'self'",
+                "'unsafe-inline'",
+                'data:',
+                'blob:',
+                'https://*.stripe.com',
+                'https://*.mapbox.com',
+                'https://*.cloudflare.com/',
+                'https://bundle.js:*',
+                // 'ws://127.0.0.1:*/'
+            ],
+            upgradeInsecureRequests: [],
+        },
+    },
+}))
 
 
 
@@ -36,13 +88,14 @@ const limiter = rateLmit({
 app.use('/api', limiter)
 app.use(morgan('dev'))// middleware de terceros
 
-//Serving static files
-app.use(express.static(`${__dirname}/public`))
 
+app.use(cookieParser())
 //nos permite recibir parametros en formato JSON
 app.use(express.json( {limit:'10kb'}) ); //esto es un middleware, nos ayuda con el post y que solo acepta 10kb de tamaño
 //app.use(functionHer) con este metodo agregamos la funcion a la app para 
 //que se comporte como un middleware
+app.use(express.urlencoded( { extended : true , limit : '10kb'} ))
+
 
 //Data sanitization against NoSQL query injection
 app.use(mongoSanitize());// remueve los caracteres extraños 
@@ -53,6 +106,9 @@ app.use(hpp({
     whitelist:['duration','ratingsQuantity','ratingsAverage','maxGroupSize','difficulty','price']
 }))//previene la polucion de queries en el url
 
+//ROUTES
+
+app.use('/', viewRoutes)
 app.use('/api/v1/users',    userRoutes);
 app.use('/api/v1/reviews',  reviewRoutes);
 app.use('/api/v1/tours',    tourRoutes);// generamos el middleware para correr una subApp dentro de nuestra app
@@ -63,6 +119,8 @@ app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
     
+
+
 app.use(globalErrorController)
 //middleware para encargarnos de los errores
 

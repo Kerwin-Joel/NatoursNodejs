@@ -19,6 +19,9 @@ userRouter
 userRouter
     .route('/login')
     .post(authController.login);
+userRouter
+    .route('/logout')
+    .get(authController.logout);
 
     
 userRouter.use(authController.protected)

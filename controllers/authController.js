@@ -50,6 +50,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     createSendToken(newUser,201,res)
 })
 exports.login = catchAsync(async(req, res, next)=>{
+
     const {email, password} = req.body// get inputs of user
 
     if (!email || !password) {
@@ -68,10 +69,13 @@ exports.login = catchAsync(async(req, res, next)=>{
 
 })
 exports.protected = catchAsync(async (req, res, next)=>{
+
     //1) get token and check if it's there
     let token;
     if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
         token = req.headers.authorization.split(" ")[1];
+    }else if(req.cookies.jwt){
+        token = req.cookies.jwt
     }
     //2) check if token is not there
     if(!token){
@@ -93,7 +97,41 @@ exports.protected = catchAsync(async (req, res, next)=>{
     //remember that req object travel for all the middlewares and that have a effect cascade
     next()
 })
+//Only to rendered pages, no erros
+exports.isLoggedIn = async (req, res, next)=>{
+    //1) get token
+    // console.log(req)
+    if(req.cookies.jwt){
+                        // promisify to convert a async await
+        const decoded = await promisify(jwt.verify)(
+            req.cookies.jwt, 
+            process.env.JWT_SECRET
+        )
+        //2) CHECK IF USER STILL EXIST
+        const currentUser = await User.findById(decoded.id)
+        if(!currentUser){
+            return next()
+        }
+        if(currentUser.changedPasswordAfter(decoded.iat)){
+            return next()
+        }
+        res.locals.user = currentUser
+        return next()
 
+    }
+    console.log('cookie false')
+    next()
+}
+exports.logout = (req, res, next)=>{
+    res.cookie('jwt', 'tokenrandom', {
+        expires: new Date(Date.now() + 1 * 1000),
+        httpOnly: true
+    })
+    res.status(200).json({
+        status: 'success',
+        message: 'You are now logged out'
+    })
+}
 exports.restricTo =  (...roles) => {
     return (req, res, next)=>{
         if(!roles.includes(req.user.role)) return next(new AppError('You do not have permission to perform this action', 403))

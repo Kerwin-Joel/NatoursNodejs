@@ -130,12 +130,14 @@ tourSchema.index({startLocation:'2dsphere'})
 tourSchema.virtual('durationWeeks').get(function(){
     return this.duration / 7
 })
+
 //virtual populate
 tourSchema.virtual('reviews',{ 
     ref          : 'Review', // referencia del modelo a apuntar, es un id reference
     foreignField : 'tour',  // key de la referencia a la que apunta
     localField   : '_id' // key del propio modelo con la que hara match en referencia
 })
+
 // DOCUMENT MIDDLEWARE: run before .save() and .create()
 tourSchema.pre('save',function(next){
     //este middleware se ejecuta antes de que envie el body a la bd
