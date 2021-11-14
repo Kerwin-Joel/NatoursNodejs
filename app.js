@@ -108,10 +108,7 @@ app.use(morgan('dev'))// middleware de terceros
 
 
 app.use(cookieParser())
-//nos permite recibir parametros en formato JSON
-app.use(express.json( {limit:'10kb'}) ); //esto es un middleware, nos ayuda con el post y que solo acepta 10kb de tamaño
-//app.use(functionHer) con este metodo agregamos la funcion a la app para 
-//que se comporte como un middleware
+
 app.use(express.urlencoded( { extended : true , limit : '10kb'} ))
 
 
@@ -133,6 +130,10 @@ app.use(hpp({
 //   });
 //ROUTES
 app.post('/webhooks-checkout', bodyParser.raw({type: 'application/json'}), bookingController.webhookCheckout);
+//nos permite recibir parametros en formato JSON
+app.use(express.json( {limit:'10kb'}) ); //esto es un middleware, nos ayuda con el post y que solo acepta 10kb de tamaño
+//app.use(functionHer) con este metodo agregamos la funcion a la app para 
+//que se comporte como un middleware
 app.use('/', viewRoutes)
 app.use('/api/v1/users',    userRoutes);
 app.use('/api/v1/reviews',  reviewRoutes);
