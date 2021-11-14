@@ -100,10 +100,7 @@ const limiter = rateLmit({
     windowMs    : 60 * 60 * 1000,
     message     : 'Too many request for this IP, please try again in a hour'
 })
-app.post('/webhooks-checkout',
-            express.raw({ type: 'application/json' }),
-            bookingController.webhookCheckout
-            )
+
 
 app.use('/api', limiter)
 app.use(morgan('dev'))// middleware de terceros
@@ -127,7 +124,10 @@ app.use(hpp({
 }))//previene la polucion de queries en el url
 
 //ROUTES
-
+app.post('/webhooks-checkout',
+            express.raw({ type: 'application/json' }),
+            bookingController.webhookCheckout
+            )
 app.use('/', viewRoutes)
 app.use('/api/v1/users',    userRoutes);
 app.use('/api/v1/reviews',  reviewRoutes);
