@@ -16,6 +16,7 @@ const xss           = require('xss-clean')
 const hpp           = require('hpp')
 const cookieParser  = require('cookie-parser')
 const compression   = require('compression')
+const cors          = require('cors')
 
 const AppError      = require('./utils/appError')
 const userRoutes    = require('./routes/userRoutes')
@@ -26,6 +27,16 @@ const bookingRoutes    = require('./routes/bookingRoutes');
 const globalErrorController = require('./controllers/errorController');
 
 app.enable('trust proxy');
+
+app.use(cors());
+//Access-Control-Allow-Origin: *
+//api.natours.com, frontend natours.com
+//app.use(cors({
+//    origin: 'https://api.natours.com'
+//}))
+
+app.options('*', cors());
+// app.options('api/v1/tour/:id', cors());
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
