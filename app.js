@@ -18,12 +18,13 @@ const cookieParser  = require('cookie-parser')
 const compression   = require('compression')
 const cors          = require('cors')
 
-const AppError      = require('./utils/appError')
-const userRoutes    = require('./routes/userRoutes')
-const tourRoutes    = require('./routes/tourRoutes');
-const reviewRoutes    = require('./routes/reviewRoutes');
-const viewRoutes    = require('./routes/viewRoutes');
-const bookingRoutes    = require('./routes/bookingRoutes');
+const AppError          = require('./utils/appError')
+const userRoutes        = require('./routes/userRoutes')
+const tourRoutes        = require('./routes/tourRoutes');
+const reviewRoutes      = require('./routes/reviewRoutes');
+const viewRoutes        = require('./routes/viewRoutes');
+const bookingRoutes     = require('./routes/bookingRoutes');
+const bookingController = require('./controllers/bookingController');
 const globalErrorController = require('./controllers/errorController');
 
 app.enable('trust proxy');
@@ -99,6 +100,10 @@ const limiter = rateLmit({
     windowMs    : 60 * 60 * 1000,
     message     : 'Too many request for this IP, please try again in a hour'
 })
+app.post('/webhook-checkout',
+            express.raw({ type: 'application/json' }),
+            bookingController.webhookCheckout
+            )
 
 app.use('/api', limiter)
 app.use(morgan('dev'))// middleware de terceros

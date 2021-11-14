@@ -6,7 +6,7 @@ const bookingController = require('../controllers/bookingController')
 
 router.use(authController.isLoggedIn)
 
-router.get('/',bookingController.createBookingCheckout ,authController.isLoggedIn, viewController.getOverview) 
+router.get('/',authController.isLoggedIn, viewController.getOverview) 
 router.get('/tour/:slug',authController.protected,  viewController.getTour)
 router.get('/login',authController.isLoggedIn, viewController.getLoginForm)
 router.get('/me',authController.protected ,viewController.getAccount)
