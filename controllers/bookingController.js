@@ -48,14 +48,14 @@ exports.getCheckoutSession = async(req, res,next) => {
 //     res.redirect(req.originalUrl.split('?')[0])
 // })
 
-const createBookingCheckout = catchAsync(async session => {
+const createBookingCheckout = async session => {
     console.log(session)
     const tour = session.client_reference_id;
-    const user = ( await User.findOne({email: 'loulou@example.com'}) ).id;
+    const user = ( await User.findOne({email: session.customer_details.email}) ).id;
     const price = session.amount_total / 100;
     
     await Booking.create({tour, user, price});
-})
+};
 
 //this method is secure because use stripe webhooks
 exports.webhookCheckout = (req, res, next) => {
