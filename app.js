@@ -124,10 +124,7 @@ app.use(hpp({
 }))//previene la polucion de queries en el url
 
 //ROUTES
-app.post('/webhooks-checkout',
-            express.raw({ type: 'application/json' }),
-            bookingController.webhookCheckout
-            )
+app.post('/webhooks-checkout',express.raw({type: 'application/json'}),bookingController.webhookCheckout)
 app.use('/', viewRoutes)
 app.use('/api/v1/users',    userRoutes);
 app.use('/api/v1/reviews',  reviewRoutes);
