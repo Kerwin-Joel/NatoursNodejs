@@ -213,6 +213,6 @@ exports.updatePassword = catchAsync(async(req, res, next) => {
     user.passwordConfirm = passwordNewConfirmed;
     const result = await user.save()
     // 4 ) Log user in , send JWT
-    createSendToken(user,201req,,res)
+    createSendToken(user,201,req,res)
 
 })
