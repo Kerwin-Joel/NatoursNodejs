@@ -17,6 +17,7 @@ const hpp           = require('hpp')
 const cookieParser  = require('cookie-parser')
 const compression   = require('compression')
 const cors          = require('cors')
+const bodyParser    = require('body-parser')
 
 const AppError          = require('./utils/appError')
 const userRoutes        = require('./routes/userRoutes')
@@ -124,7 +125,7 @@ app.use(hpp({
 }))//previene la polucion de queries en el url
 
 //ROUTES
-app.post('/webhooks-checkout',express.raw({type: 'application/json'}),bookingController.webhookCheckout)
+app.post('/webhooks-checkout',bodyParser.raw({ type: 'application/json' }),bookingController.webhookCheckout)
 app.use('/', viewRoutes)
 app.use('/api/v1/users',    userRoutes);
 app.use('/api/v1/reviews',  reviewRoutes);
