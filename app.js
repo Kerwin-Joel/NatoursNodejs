@@ -25,6 +25,8 @@ const viewRoutes    = require('./routes/viewRoutes');
 const bookingRoutes    = require('./routes/bookingRoutes');
 const globalErrorController = require('./controllers/errorController');
 
+app.enable('trust proxy');
+
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 //Serving static files
