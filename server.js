@@ -25,9 +25,7 @@ mongoose.connect(
     .then(() => console.log('Conection successful'))
 
 //PUERTO EN EL QUE EL SERVIDOR ESCUCHARÁ
-const server = app.listen(port,()=>{
-    require('dotenv').config();
-    dotenv.config({path:'./config.env'})
+const server = app.listen(process.env.PORT || port,()=>{
     console.log(`app listening on port ${port}`)
 })
 
