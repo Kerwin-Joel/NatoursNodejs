@@ -70,10 +70,11 @@ exports.webhookCheckout = (req, res, next) => {
             signature,
             process.env.STRIPE_WEBHOOK_SECRET
         );
+        console.log("en el evento dentro del try",event)
     } catch (err) {
         return res.status(400).send(`Webhook error: ${err.message}`);
     }
-    console.log(event)
+    console.log('eventdasdas')
     if (event.type === 'checkout.session.completed'){
         createBookingCheckout(event.data.object)
     }
