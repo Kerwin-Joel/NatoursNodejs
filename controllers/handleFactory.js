@@ -92,7 +92,8 @@ exports.getAll    = Model => {
                 .pagination()
                 
         //hacer consulta
-        const docu = await feature.query.explain(); // Execute query
+        // const docu = await feature.query.explain(); // In MongoDB, the explain command tells the MongoDB server to return stats about how it executed a query
+        const docu = await feature.query; // Execute query
     
         res.status(200).send({
             status: 'success',

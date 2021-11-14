@@ -59,3 +59,4 @@ if(process.argv[2] === '--import') {
 }else if(process.argv[2] === '--delete'){
     deleteData()
 }
+//to delete and import data execute this file this postfix --import or --delete

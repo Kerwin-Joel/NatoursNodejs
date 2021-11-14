@@ -21,6 +21,7 @@ const userRoutes    = require('./routes/userRoutes')
 const tourRoutes    = require('./routes/tourRoutes');
 const reviewRoutes    = require('./routes/reviewRoutes');
 const viewRoutes    = require('./routes/viewRoutes');
+const bookingRoutes    = require('./routes/bookingRoutes');
 const globalErrorController = require('./controllers/errorController');
 
 app.set('view engine', 'pug');
@@ -111,6 +112,7 @@ app.use(hpp({
 app.use('/', viewRoutes)
 app.use('/api/v1/users',    userRoutes);
 app.use('/api/v1/reviews',  reviewRoutes);
+app.use('/api/v1/bookings',  bookingRoutes);
 app.use('/api/v1/tours',    tourRoutes);// generamos el middleware para correr una subApp dentro de nuestra app
 // similar a correr una app con rutas dentro de nuestra app padre,
 // en este caso tourRouter y userRouter "corren" dentro de app

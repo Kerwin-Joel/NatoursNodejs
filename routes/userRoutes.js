@@ -1,9 +1,8 @@
-const express = require('express');
-const authController = require('../controllers/authController');
-const factory = require('../controllers/handleFactory');
-const userRouter = express.Router();
-const userController = require('../controllers/userController')
-//exportamos el modulo Router de express para generar un sistema de multirutas
+const express           = require('express');
+const authController    = require('../controllers/authController');
+const userRouter        = express.Router(); //exportamos el modulo Router de express para generar un sistema de multirutas
+const userController    = require('../controllers/userController')
+
 
 
 //ENDPOINTS TO USER AUTHENTICATE
@@ -31,7 +30,10 @@ userRouter
     .patch(authController.updatePassword)
 userRouter
     .route('/updateUserData')
-    .patch(userController.updateUserData) //This controller only update name and email
+    .patch(
+        userController.uploadUserPhoto,
+        userController.resizeUserPhoto,
+        userController.updateUserData) //This controller only update name and email and photo
 userRouter
     .route('/deleteUser')
     .delete(userController.deleted)

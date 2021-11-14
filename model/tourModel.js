@@ -11,7 +11,7 @@ const tourSchema = new mongoose.Schema({
         trim        : true,
         //data validation
         maxlength   : [40,'un tour debe tener menos o igual a 40 caracteres'],
-        minlength   :[10,'un tour debe tener mas o igual a 10 caracteres'],
+        minlength   : [10,'un tour debe tener mas o igual a 10 caracteres'],
         // validate:[validator.isAlpha,'']
     },
     rating:{
@@ -117,8 +117,8 @@ const tourSchema = new mongoose.Schema({
     
 },
     {
-    toJSON  : { virtuals: true},
-    toObject: { virtuals: true }
+        toJSON  : { virtuals: true},
+        toObject: { virtuals: true }
     }
 )
 
