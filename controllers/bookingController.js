@@ -69,11 +69,11 @@ exports.webhookCheckout = async (req, res) => {
         console.log(`❌ Error message: ${err.message}`);
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
-    console.log('eventdasdas')
-    if (event.type === 'checkout.session.completed'){
-        console.log('entre el if del checkout s')
-        createBookingCheckout(event.data.object)
-    }
+    console.log('✅ Success:', event.id);
+    // if (event.type === 'checkout.session.completed'){
+    //     console.log('entre el if del checkout s')
+    //     createBookingCheckout(event.data.object)
+    // }
     res.status(200).json({ received: true });
 };
 exports.createBooking = factory.createOne(Booking)
