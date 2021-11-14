@@ -125,7 +125,7 @@ app.use(hpp({
 }))//previene la polucion de queries en el url
 
 app.use((req, res, next) => {
-    if (req.originalUrl === '/webhook') {
+    if (req.originalUrl === '/webhooks-checkout') {
       next();
     } else {
       express.json()(req, res, next);
