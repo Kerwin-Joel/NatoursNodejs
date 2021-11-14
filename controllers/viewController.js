@@ -39,7 +39,6 @@ exports.getTour = catchAsync(async (req, res,next)=>{
 })
 
 exports.getLoginForm = catchAsync(async (req, res)=>{
-    console.log('login')
     res.status(200)
         .set(
             'Content-Security-Policy',
@@ -67,7 +66,6 @@ exports.updateUserData = catchAsync(async (req, res)=>{
         new:true, // para devolver el documento modificado 
         runValidators:true // si es true ejecuta los validadores de update del modelo
     })
-    console.log(updateUser)
     res.status(200)
         .render('account',{
             title   : 'Account',

@@ -124,7 +124,6 @@ exports.isLoggedIn = async (req, res, next)=>{
         return next()
 
     }
-    console.log('cookie false')
     next()
 }
 exports.logout = (req, res, next)=>{
@@ -146,7 +145,6 @@ exports.restricTo =  (...roles) => {
 
 exports.forwardPassword =  catchAsync(async(req, res, next) => {
     //1) get user based on posted email
-    console.log('dasdasdsa')
     const user = await User.findOne({email: req.body.email})
 
     if(!user) return next(new AppError('There is no user with this email', 404))
@@ -160,9 +158,7 @@ exports.forwardPassword =  catchAsync(async(req, res, next) => {
         const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
 
         let result = await new Email(user, resetUrl).sendPasswordReset()
-        console.log('result')
         console.log(result)
-        console.log('result')
 
         res.status(200).json({
             status:'success', 
