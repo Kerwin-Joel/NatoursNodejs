@@ -58,7 +58,6 @@ const createBookingCheckout = async session => {
 };
 exports.webhookCheckout = async (req, res) => {
     console.log('check')
-    console.log('signature')
     console.log(req.body)
     console.log(process.env.STRIPE_WEBHOOK_SECRET)
     let event;
