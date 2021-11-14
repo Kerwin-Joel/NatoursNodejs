@@ -124,8 +124,15 @@ app.use(hpp({
     whitelist:['duration','ratingsQuantity','ratingsAverage','maxGroupSize','difficulty','price']
 }))//previene la polucion de queries en el url
 
+app.use((req, res, next) => {
+    if (req.originalUrl === '/webhook') {
+      next();
+    } else {
+      bodyParser.json()(req, res, next);
+    }
+  });
 //ROUTES
-app.post('/webhooks-checkout',bodyParser.raw({ type: 'application/json' }),bookingController.webhookCheckout)
+app.post('/webhooks-checkout',bodyParser.raw({type: 'application/json'}),bookingController.webhookCheckout)
 app.use('/', viewRoutes)
 app.use('/api/v1/users',    userRoutes);
 app.use('/api/v1/reviews',  reviewRoutes);
