@@ -126,7 +126,23 @@ app.use(hpp({
 //ROUTES
 app.post('/webhooks-checkout',
             express.raw({ type: 'application/json' }),
-            bookingController.webhookCheckout
+            (request, response) => {
+                const event = request.body;
+                // Handle the event
+                switch (event.type) {
+                    case 'payment_intent.succeeded':
+                        const paymentIntent = event.data.object;
+                        console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
+                        // Then define and call a method to handle the successful payment intent.
+                        // handlePaymentIntentSucceeded(paymentIntent);
+                        break;
+                    default:
+                    // Unexpected event type
+                    console.log(`Unhandled event type ${event.type}.`);
+                }
+                // Return a 200 response to acknowledge receipt of the event
+                response.send();
+            }
             )
 app.use('/', viewRoutes)
 app.use('/api/v1/users',    userRoutes);
