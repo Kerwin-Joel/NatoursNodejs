@@ -100,7 +100,7 @@ const limiter = rateLmit({
     windowMs    : 60 * 60 * 1000,
     message     : 'Too many request for this IP, please try again in a hour'
 })
-app.post('/webhook-checkout',
+app.post('/webhooks-checkout',
             express.raw({ type: 'application/json' }),
             bookingController.webhookCheckout
             )

@@ -25,7 +25,8 @@ mongoose.connect(
     .then(() => console.log('Conection successful'))
 
 //PUERTO EN EL QUE EL SERVIDOR ESCUCHARÁ
-const server = app.listen(process.env.PORT || port,()=>{
+// const server = app.listen(process.env.PORT || port,()=>{
+const server = app.listen(3000 || port,()=>{
     console.log(`app listening on port ${port}`)
 })
 
