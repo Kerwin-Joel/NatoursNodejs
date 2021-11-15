@@ -102,7 +102,9 @@ const limiter = rateLmit({
     message     : 'Too many request for this IP, please try again in a hour'
 })
 
-
+app.post('/webhooks-checkout', 
+        bodyParser.raw({ inflate: true, limit: '100kb', type: 'text/xml'}),
+        bookingController.webhookCheckout);
 app.use('/api', limiter)
 app.use(morgan('dev'))// middleware de terceros
 
@@ -132,7 +134,7 @@ app.use(hpp({
 //     }
 //   });
 //ROUTES
-app.post('/webhooks-checkout', bodyParser.raw({ inflate: true, limit: '100kb', type: 'text/xml'}), bookingController.webhookCheckout);
+
 app.use('/', viewRoutes)
 app.use('/api/v1/users',    userRoutes);
 app.use('/api/v1/reviews',  reviewRoutes);
